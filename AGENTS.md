@@ -14,6 +14,8 @@ JSON CLI，供 agent skill 和自动化脚本消费。
 - `src/divination_chart_cli/charts.py` 负责排盘，`src/divination_chart_cli/cli.py`
   只负责参数和序列化。
 - 新增或修改参数时同步更新 README 和测试。
+- `skills/divination-chart/` 是随仓库发布的排盘、解盘 Skill；修改 CLI 参数、
+  JSON 字段或新增盘种时，同步更新 Skill 路由与对应 references。
 
 ## 常用命令
 
@@ -27,3 +29,4 @@ uv run divination-chart-cli --help
 
 - 已实现 `liuyao`（别名 `sixline`）与 `bazi`。
 - 已验证本地 `uvx --from .` 启动、真实排盘 JSON、测试与分发构建。
+- 已提供可从 GitHub 安装的 `divination-chart` Skill，当前支持六爻和八字。

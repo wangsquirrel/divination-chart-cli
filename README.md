@@ -22,7 +22,8 @@ uvx --from git+https://github.com/wangsquirrel/divination-chart-cli \
   --yaogua 0 1 2 3 0 1
 ```
 
-`--yaogua` 的顺序是初爻到上爻，每项为硬币背面数 `0-3`。省略该参数时会自动摇卦。
+`--yaogua` 的顺序是初爻到上爻，每项为三枚硬币的字面枚数 `0-3`：
+`0=老阴动`、`1=少阳静`、`2=少阴静`、`3=老阳动`。省略该参数时会自动摇卦。
 
 八字排盘：
 
@@ -52,6 +53,34 @@ uvx --from git+https://github.com/wangsquirrel/divination-chart-cli divination-c
 ```
 
 六爻子命令也提供别名 `sixline`。
+
+## 安装排盘 Skill
+
+仓库内的
+[`divination-chart`](skills/divination-chart/SKILL.md)
+Skill 会调用本 CLI 生成并解读六爻、八字盘面；后续盘种也会通过同一 Skill 扩展。
+
+在 Codex 中使用内置安装器：
+
+```text
+$skill-installer install https://github.com/wangsquirrel/divination-chart-cli/tree/main/skills/divination-chart
+```
+
+也可以使用跨 Agent 的 `skills` CLI：
+
+```bash
+npx skills add wangsquirrel/divination-chart-cli --global --yes
+```
+
+安装后可这样调用：
+
+```text
+$divination-chart 我想问未来三个月换工作是否合适，请现在起一卦并解读。
+$divination-chart 请按我的出生信息排八字，并分析当前大运和今年趋势。
+```
+
+手动安装时，只需把 `skills/divination-chart` 目录复制或链接到用户级
+`~/.agents/skills/divination-chart`；无需克隆后长期保留整个仓库。
 
 ## 开发
 

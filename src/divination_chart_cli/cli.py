@@ -94,7 +94,7 @@ def build_parser() -> argparse.ArgumentParser:
         nargs=6,
         metavar=("Y1", "Y2", "Y3", "Y4", "Y5", "Y6"),
         type=_bounded_int("摇卦值", 0, 3),
-        help="初爻到上爻的 6 个硬币背面数（0-3）；省略则自动摇卦",
+        help="初爻到上爻的 6 个硬币字面枚数（0-3）；省略则自动摇卦",
     )
     liuyao.set_defaults(handler=_handle_liuyao)
 

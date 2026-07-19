@@ -112,3 +112,11 @@ def test_invalid_calendar_date_is_reported_as_usage_error():
         )
 
     assert error.value.code == 2
+
+
+def test_liuyao_help_uses_divicast_coin_side_terminology(capsys):
+    with pytest.raises(SystemExit) as error:
+        cli.main(["liuyao", "--help"])
+
+    assert error.value.code == 0
+    assert "硬币字面枚数" in capsys.readouterr().out

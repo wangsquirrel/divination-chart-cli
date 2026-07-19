@@ -1,0 +1,4 @@
+interface:
+  display_name: "排盘与解盘"
+  short_description: "调用 divination-chart-cli 生成并解读六爻、八字盘"
+  default_prompt: "使用 $divination-chart 根据我的需求生成相应盘面，并结合 JSON 证据解读。"
