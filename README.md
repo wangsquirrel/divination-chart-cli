@@ -13,18 +13,11 @@ agent-friendly 排盘命令行程序。它把 `divination-chart-mcp` 的六爻�
 
 ## 通过 uvx 使用
 
-在本地仓库运行：
+直接从 GitHub 运行：
 
 ```bash
-uvx --from . divination-chart-cli liuyao \
-  --year 2024 --month 1 --day 1 --hour 12 \
-  --yaogua 0 1 2 3 0 1
-```
-
-发布到 GitHub 后可直接运行：
-
-```bash
-uvx --from git+https://github.com/<owner>/divination-chart-cli divination-chart-cli liuyao \
+uvx --from git+https://github.com/wangsquirrel/divination-chart-cli \
+  divination-chart-cli liuyao \
   --year 2024 --month 1 --day 1 --hour 12 \
   --yaogua 0 1 2 3 0 1
 ```
@@ -34,7 +27,8 @@ uvx --from git+https://github.com/<owner>/divination-chart-cli divination-chart-
 八字排盘：
 
 ```bash
-uvx --from . divination-chart-cli bazi \
+uvx --from git+https://github.com/wangsquirrel/divination-chart-cli \
+  divination-chart-cli bazi \
   --birth-year 1990 --birth-month 8 --birth-day 15 --birth-hour 14 \
   --gender 1 \
   --now-year 2026 --now-month 7 --now-day 19 --now-hour 16
@@ -45,15 +39,16 @@ uvx --from . divination-chart-cli bazi \
 `--pretty` 放在子命令之前：
 
 ```bash
-uvx --from . divination-chart-cli --pretty bazi ...
+uvx --from git+https://github.com/wangsquirrel/divination-chart-cli \
+  divination-chart-cli --pretty bazi ...
 ```
 
 完整参数：
 
 ```bash
-uvx --from . divination-chart-cli --help
-uvx --from . divination-chart-cli liuyao --help
-uvx --from . divination-chart-cli bazi --help
+uvx --from git+https://github.com/wangsquirrel/divination-chart-cli divination-chart-cli --help
+uvx --from git+https://github.com/wangsquirrel/divination-chart-cli divination-chart-cli liuyao --help
+uvx --from git+https://github.com/wangsquirrel/divination-chart-cli divination-chart-cli bazi --help
 ```
 
 六爻子命令也提供别名 `sixline`。
