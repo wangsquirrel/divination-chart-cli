@@ -1,0 +1,23 @@
+src/divination_chart_cli/cli.py
+  s_1ffedc39a14d2c::t_28451352fead02 97
+tests/test_cli.py
+  s_1ffedc39a14d2c::t_eaeaf3a684b214 115-122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f8a066b3e8a1465a049d119cd347668cbad2d6cb",
+  "prompts": {},
+  "sessions": {
+    "s_1ffedc39a14d2c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7986-eb35-7f61-8fe7-aa8972ce7727",
+        "model": "unknown"
+      },
+      "human_author": "Wáng Sōng <wangsquirrel@gmail.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
