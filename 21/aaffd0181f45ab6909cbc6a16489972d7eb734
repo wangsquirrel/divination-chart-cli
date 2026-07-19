@@ -1,0 +1,21 @@
+README.md
+  s_1ffedc39a14d2c::t_cc3011f64411fe 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "21aaffd0181f45ab6909cbc6a16489972d7eb734",
+  "prompts": {},
+  "sessions": {
+    "s_1ffedc39a14d2c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f7986-eb35-7f61-8fe7-aa8972ce7727",
+        "model": "unknown"
+      },
+      "human_author": "wangsong.conf <wangsong.conf@bytedance.com>"
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
