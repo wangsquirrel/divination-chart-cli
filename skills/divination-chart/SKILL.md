@@ -7,6 +7,10 @@ description: Use divination-chart-cli to generate and interpret Chinese metaphys
 
 调用远端 `divination-chart-cli` 获得机器可读盘面，再加载对应盘种的参考文件循证解读。把传统术数表述为文化与反思性视角，不把推断包装成确定事实。
 
+六爻新参数要求 CLI `0.2.0` 或更高版本，底层由 CLI 从 PyPI 安装 `divicast>=0.2.4,<0.3.0`，无需相邻源码目录。首次调用 CLI 或参数不识别时先检查同一调用来源的 `--version`／`--help`。已知远端升级但仍命中旧缓存时，可用 `uvx --refresh-package divination-chart-cli --from git+https://github.com/wangsquirrel/divination-chart-cli divination-chart-cli --version` 刷新一次；仍不兼容则报告具体版本问题，不能改用错误输入口径。
+
+在 CLI 仓库根目录开发或验证当前修改时，用 `uv run divination-chart-cli ...` 或 `uvx --from . divination-chart-cli ...`；安装后的独立 Skill 使用下文的远端命令。不要把未推送的本地修改当成远端已经可用。
+
 ## 选择盘种
 
 | 用户意图 | CLI 子命令 | 必须读取 |
@@ -19,7 +23,7 @@ description: Use divination-chart-cli to generate and interpret Chinese metaphys
 ## 通用流程
 
 1. 收集所选盘种的必需输入，只追问缺失且无法安全推断的字段。
-2. 使用用户已归一化的当地时间。工具不处理时区、地点或真太阳时；口径可能影响结果时先说明。
+2. 使用已明确排盘口径的时间。六爻分秒和节气基准见下文；工具不转换时区、地点或真太阳时。
 3. 运行对应命令，只把成功命令的 stdout 当作盘面 JSON。
 4. 校验 JSON 具有该盘种 reference 所列的核心字段。失败时报告具体错误，不得补造盘面。
 5. 先列盘面事实，再做传统规则推断，最后给出现实建议。
@@ -27,34 +31,39 @@ description: Use divination-chart-cli to generate and interpret Chinese metaphys
 
 ## 六爻工作流
 
-提炼一个具体问题、对象和关注时段。用户给出摇卦值时，要求恰好 6 个 `0-3` 的整数，顺序为初爻到上爻，数值是每次三枚硬币的字面枚数：
+提炼一个具体问题、对象和关注时段。使用《增删卜易》纳甲框架，先读取六爻字段和解读规则；问应期时另读[应期规则](references/liuyao-timing.md)，核实出处、术语或流派分歧时读[来源索引](references/liuyao-source-map.md)。书中不同作者的意见不能合并为无条件定律。
 
-- `0`：老阴动
-- `1`：少阳静
-- `2`：少阴静
-- `3`：老阳动
+用户给出摇卦记录时，核对恰好六次、从初爻到上爻，并确认记录的含义：
 
-同一问题只起一次卦。未给摇卦值但明确要求起卦时，省略 `--yaogua` 让工具自动摇卦。
+- 已知阴阳动静或标准爻值：用 `--lines`，`6=老阴动、7=少阳静、8=少阴静、9=老阳动`。
+- 传统铜钱字面／背面枚数：用 `--coin-counts`，并指定 `--coin-side text`／`back`。字面枚数 `0/1/2/3` 对应 `9/8/7/6`；不要猜现代硬币哪面是字面。
+- 明确来自旧版 CLI 的 0–3 编码或 `yaogua`：才用 `--yaogua`，保留 `0老阴、1少阳、2少阴、3老阳`；这不是传统字面枚数。未知来源的 0–3 记录先核对，不能自动翻转。
+
+三种输入互斥。同一问题默认复用已起的卦，不为获得喜欢的结论重新摇卦；这是本 Skill 的复现约定，不冒称经典禁止复占。未给记录但明确要求起卦时，省略三种输入参数，让工具模拟三枚硬币。
+
+起卦时间用实际时钟或用户提供的原始时间，不能照抄示例日期。六爻支持分秒，默认 0；默认日界为 **23:00**，按节气交接换月、立春换年。用户明确采用晚子时日柱仍属当天的 Tyme 流派 2 时，传 `--zi-hour lunar_sect2_day_same`，0 点换日；不要用移动时间一小时来模拟另一日界。按输出 `calendar` 核对实际口径。节气基准为 UTC+08:00；非北京时间先明确口径，需要北京时间时先转换，再传无时区时间。工具不实现当地节气或真太阳时校正。仅知整点范围且可能跨交节时，保留两种时间可能性，不能补造分秒后给唯一月建。
 
 ```bash
 uvx --from git+https://github.com/wangsquirrel/divination-chart-cli \
   divination-chart-cli liuyao \
-  --year 2026 --month 7 --day 19 --hour 16
+  --year 2026 --month 7 --day 19 --hour 16 --minute 30 --second 0
 ```
 
-若用户给出摇卦值，追加：
+若用户给出标准爻值，追加：
 
 ```bash
---yaogua 0 1 2 3 0 1
+--lines 6 7 8 9 6 7
 ```
 
-用户已提供完整六爻 JSON 时跳过命令。只对 `origin.is_changed=true` 的爻解释变爻；不要把静爻的 `variant` 当成实际变化。
+等价的传统字面计数是 `--coin-counts 3 2 1 0 3 2 --coin-side text`。此接口要求底层 `divicast>=0.2.4`。如果环境依赖未就绪或不认识新参数，应报告具体版本问题，不得降级为把字面枚数直接交给 `--yaogua`；不得补造盘面。
+
+用户已提供完整六爻 JSON 时跳过命令，核对 `time`、可用的 `casting`／`calendar` 和阴阳动静；旧 JSON 没有新增字段时按六爻字段文件处理。只对 `origin.is_changed=true` 解释实际变爻。静爻可能暗动，须结合月日判定，但暗动不产生 `variant` 变爻。
 
 六爻回答采用：
 
 1. **排盘摘要**：问题、时间、起卦方式、本卦 → 变卦、世应、动爻。
-2. **取用与证据**：说明用神，列出 3-6 条带 JSON 字段路径的证据。
-3. **综合解读**：态势、推动/阻碍、变化及条件。
+2. **取用与证据**：列明用神候选、主用及理由；两现或不现时保留未排除的解释，列出 3-6 条带 JSON 字段路径的证据。
+3. **综合解读**：按月日、空破、明暗动、原忌、动变的适用条件解释推动与阻碍，包含反证；推断要同时给字段依据和规则依据。
 4. **结论与建议**：倾向性判断、现实行动和不确定性。
 
 ## 八字工作流

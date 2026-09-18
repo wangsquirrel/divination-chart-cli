@@ -86,15 +86,53 @@ def build_parser() -> argparse.ArgumentParser:
         "liuyao",
         aliases=["sixline"],
         help="六爻排盘",
-        description="按公历年月日时生成六爻排盘 JSON。",
+        description="按公历年月日时分秒生成六爻 JSON；默认23:00换日，交节换月。",
     )
     _add_date_fields(liuyao)
     liuyao.add_argument(
+        "--minute",
+        type=_bounded_int("分钟", 0, 59),
+        default=0,
+        help="分钟（0-59），省略为 0；交节附近请提供准确时间",
+    )
+    liuyao.add_argument(
+        "--second",
+        type=_bounded_int("秒", 0, 59),
+        default=0,
+        help="秒（0-59），省略为 0",
+    )
+    liuyao.add_argument(
+        "--zi-hour",
+        choices=("default_next_day", "lunar_sect2_day_same"),
+        default="default_next_day",
+        help="日界：default_next_day=23点（默认）；lunar_sect2_day_same=0点日界，晚子时时柱按Tyme流派2",
+    )
+    casting = liuyao.add_mutually_exclusive_group()
+    casting.add_argument(
         "--yaogua",
         nargs=6,
         metavar=("Y1", "Y2", "Y3", "Y4", "Y5", "Y6"),
         type=_bounded_int("摇卦值", 0, 3),
-        help="初爻到上爻的 6 个硬币字面枚数（0-3）；省略则自动摇卦",
+        help="旧版编码（0老阴/1少阳/2少阴/3老阳），不是传统字面枚数；初爻到上爻",
+    )
+    casting.add_argument(
+        "--lines",
+        nargs=6,
+        metavar=("L1", "L2", "L3", "L4", "L5", "L6"),
+        type=_bounded_int("爻值", 6, 9),
+        help="标准爻值（6老阴/7少阳/8少阴/9老阳），初爻到上爻",
+    )
+    casting.add_argument(
+        "--coin-counts",
+        nargs=6,
+        metavar=("C1", "C2", "C3", "C4", "C5", "C6"),
+        type=_bounded_int("硬币枚数", 0, 3),
+        help="传统铜钱法的 6 次枚数（0-3），须指定 --coin-side；均省略则自动摇卦",
+    )
+    liuyao.add_argument(
+        "--coin-side",
+        choices=("text", "back"),
+        help="--coin-counts 数哪一面：text=字面，back=背面；不猜测现代硬币正反面",
     )
     liuyao.set_defaults(handler=_handle_liuyao)
 
@@ -121,7 +159,13 @@ def _handle_liuyao(args: argparse.Namespace) -> Any:
         month=args.month,
         day=args.day,
         hour=args.hour,
+        minute=args.minute,
+        second=args.second,
         yaogua=args.yaogua,
+        lines=args.lines,
+        coin_counts=args.coin_counts,
+        coin_side=args.coin_side,
+        zi_hour=args.zi_hour,
     )
 
 

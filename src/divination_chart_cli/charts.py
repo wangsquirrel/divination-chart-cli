@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from divicast.birth_chart.birth import BirthChart
 from divicast.birth_chart.output import to_standard_format as bazi_to_standard_format
 from divicast.entities.misc import Gender
-from divicast.sixline import DivinatorySymbol
-from divicast.sixline.output import to_standard_format as liuyao_to_standard_format
+from divicast.sixline import DivinatorySymbol, StandardDivinatorySymbolOutput
+from divicast.sixline import to_standard_format as liuyao_to_standard_format
 
 
 def generate_liuyao(
@@ -18,11 +18,23 @@ def generate_liuyao(
     month: int,
     day: int,
     hour: int,
+    minute: int = 0,
+    second: int = 0,
     yaogua: list[int] | None = None,
-) -> Any:
-    """Generate the same standard six-line output as divination-chart-mcp."""
-    chart_time = datetime(year, month, day, hour)
-    chart = DivinatorySymbol.create(cnts=yaogua, now=chart_time)
+    lines: list[int] | None = None,
+    coin_counts: list[int] | None = None,
+    coin_side: Literal["text", "back"] | None = None,
+    zi_hour: Literal["default_next_day", "lunar_sect2_day_same"] = "default_next_day",
+) -> StandardDivinatorySymbolOutput:
+    """Pass CLI inputs to the library's canonical six-line contract."""
+    chart = DivinatorySymbol.create(
+        cnts=yaogua,
+        now=datetime(year, month, day, hour, minute, second),
+        line_values=lines,
+        coin_counts=coin_counts,
+        coin_side=coin_side,
+        calc_rules={"zi_hour": zi_hour},
+    )
     return liuyao_to_standard_format(chart)
 
 

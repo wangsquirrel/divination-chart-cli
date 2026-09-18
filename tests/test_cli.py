@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
+import tomllib
+from pathlib import Path
 
 import pytest
 
@@ -114,9 +118,129 @@ def test_invalid_calendar_date_is_reported_as_usage_error():
     assert error.value.code == 2
 
 
-def test_liuyao_help_uses_divicast_coin_side_terminology(capsys):
+def test_liuyao_help_documents_explicit_input_protocols(capsys):
     with pytest.raises(SystemExit) as error:
         cli.main(["liuyao", "--help"])
 
     assert error.value.code == 0
-    assert "硬币字面枚数" in capsys.readouterr().out
+    help_text = capsys.readouterr().out
+    assert all(
+        option in help_text
+        for option in (
+            "--lines",
+            "--coin-counts",
+            "--coin-side",
+            "--minute",
+            "--second",
+        )
+    )
+
+
+def run_cli(*args):
+    return subprocess.run(
+        [sys.executable, "-m", "divination_chart_cli.cli", *args],
+        cwd=Path(__file__).resolve().parents[1],
+        text=True,
+        encoding="utf-8",
+        capture_output=True,
+        check=False,
+    )
+
+
+def test_real_cli_version_matches_project_release():
+    project_file = Path(__file__).resolve().parents[1] / "pyproject.toml"
+    expected = tomllib.loads(project_file.read_text(encoding="utf-8"))["project"][
+        "version"
+    ]
+    result = run_cli("--version")
+    assert result.returncode == 0
+    assert result.stdout.strip() == expected
+    assert result.stderr == ""
+
+
+DATE_ARGS = ["--year", "2026", "--month", "2", "--day", "4", "--hour", "4"]
+
+
+@pytest.mark.parametrize("command", ["liuyao", "sixline"])
+def test_real_cli_precise_coin_cast_is_one_json_document(command):
+    result = run_cli(
+        command,
+        *DATE_ARGS,
+        "--minute",
+        "30",
+        "--second",
+        "12",
+        "--coin-counts",
+        *(["3"] * 6),
+        "--coin-side",
+        "text",
+    )
+    assert result.returncode == 0, result.stderr
+    output = json.loads(result.stdout)
+    assert result.stderr == ""
+    assert len(result.stdout.splitlines()) == 1
+    assert (output["benguaming"], output["bianguaming"]) == ("坤", "乾")
+    assert output["time"] == "2026-02-04 04:30:12"
+    assert output["yuejian"] == "寅"
+    assert output["line_values"] == [6] * 6
+
+
+def test_real_legacy_and_pretty_commands_preserve_chart():
+    compact = run_cli(*LIUYAO_ARGS)
+    pretty = run_cli("--pretty", *LIUYAO_ARGS)
+    assert compact.returncode == pretty.returncode == 0
+    assert compact.stderr == pretty.stderr == ""
+    assert json.loads(compact.stdout) == json.loads(pretty.stdout)
+    assert json.loads(compact.stdout)["benguaming"] == "未济"
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ["--minute", "60"],
+        ["--second", "-1"],
+        ["--zi-hour", "invalid"],
+        ["--coin-counts", *(["3"] * 6)],
+        ["--coin-side", "text"],
+        ["--coin-counts", *(["3"] * 6), "--coin-side", "heads"],
+        ["--lines", *(["6"] * 5)],
+        ["--lines", *(["10"] * 6)],
+        ["--lines", *(["6"] * 6), "--yaogua", *(["0"] * 6)],
+        ["--coin-counts", *(["0"] * 6), "--coin-side", "back", "--lines", *(["6"] * 6)],
+    ],
+)
+def test_real_cli_rejects_ambiguous_or_invalid_inputs_without_stdout(extra):
+    result = run_cli("liuyao", *DATE_ARGS, *extra)
+    assert result.returncode == 2
+    assert result.stdout == ""
+    assert result.stderr
+    assert "Traceback" not in result.stderr
+
+
+@pytest.mark.parametrize(
+    "rule, expected_day",
+    [
+        ("default_next_day", "甲午"),
+        ("lunar_sect2_day_same", "癸巳"),
+    ],
+)
+def test_real_cli_explicit_day_boundary(rule, expected_day):
+    result = run_cli(
+        "liuyao",
+        "--year",
+        "2026",
+        "--month",
+        "9",
+        "--day",
+        "16",
+        "--hour",
+        "23",
+        "--zi-hour",
+        rule,
+        "--lines",
+        *(["7"] * 6),
+    )
+    assert result.returncode == 0, result.stderr
+    output = json.loads(result.stdout)
+    assert output["bazi"].split()[2] == expected_day
+    assert output["calendar"]["zi_hour"] == rule

@@ -4,13 +4,13 @@ build-backend = "uv_build"
 
 [project]
 name = "divination-chart-cli"
-version = "0.1.0"
+version = "0.2.0"
 description = "Agent-friendly JSON CLI for divicast six-line and Bazi charts"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
 dependencies = [
-    "divicast>=0.2.3,<0.3.0",
+    "divicast>=0.2.4,<0.3.0",
 ]
 
 [project.scripts]

@@ -22,21 +22,21 @@ wheels = [
 
 [[package]]
 name = "divicast"
-version = "0.2.3"
+version = "0.2.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "rich" },
     { name = "tyme4py" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c9/54/15f295da9021c7ee66660e3839f9378bcbf22d9fa7789a6694c8d17282f0/divicast-0.2.3.tar.gz", hash = "sha256:2920816a4cd450f65bb4cbc82066e5156beb15b652663abc3bf22886b393cccd", size = 61787, upload-time = "2026-04-22T10:58:49.659Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/31/b5/78dfe1567031d125cc5f3422724ff8e1372e4f39b63509187c853c8581be/divicast-0.2.4.tar.gz", hash = "sha256:6218d9f3d27aa3c58f620265511258755feebd7f140f361cb22cf08ffa9e101a", size = 66982, upload-time = "2026-09-18T09:14:04.068Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c0/15/881e6a209d958e074d41857be9512921fb7b5bd886c6889240ff271b6d4d/divicast-0.2.3-py3-none-any.whl", hash = "sha256:b3c7c32dd20be823556d396ddbd5035b3f354f7ba8c68688a5cf470cdb3940da", size = 69664, upload-time = "2026-04-22T10:58:48.087Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/45/b554b40c105294a58ea671458c73f950c8160f2fa6409eb450265261166e/divicast-0.2.4-py3-none-any.whl", hash = "sha256:f7c97a697d39fb7e6e1657f17c3db4ade41952e6d17d90e7421a893dcf8a981e", size = 76542, upload-time = "2026-09-18T09:14:02.6Z" },
 ]
 
 [[package]]
 name = "divination-chart-cli"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "divicast" },
@@ -48,7 +48,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "divicast", specifier = ">=0.2.3,<0.3.0" }]
+requires-dist = [{ name = "divicast", specifier = ">=0.2.4,<0.3.0" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.0" }]
